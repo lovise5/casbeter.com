@@ -1,0 +1,975 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CS:GO ARENA — киберспорт 1×1 до 5×5</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', 'Arial', sans-serif; }
+    body { background: #0b0e14; color: #e0e4f0; min-height: 100vh; display: flex; flex-direction: column; }
+
+    /* Хедер */
+    .header { background: #141a24; border-bottom: 3px solid #f0b310; padding: 15px 30px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; box-shadow: 0 4px 12px rgba(0,0,0,0.6); }
+    .logo { display: flex; align-items: center; gap: 12px; }
+    .logo i { font-size: 36px; color: #f0b310; filter: drop-shadow(0 0 6px #f0b31088); }
+    .logo h1 { font-size: 28px; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; background: linear-gradient(135deg, #ffffff, #f0b310); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .auth-buttons { display: flex; gap: 15px; align-items: center; }
+
+    .btn { padding: 10px 22px; border-radius: 8px; font-weight: 700; font-size: 15px; border: none; cursor: pointer; transition: all 0.2s ease; display: inline-flex; align-items: center; gap: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
+    .btn-primary { background: #f0b310; color: #0b0e14; box-shadow: 0 0 10px #f0b31055; }
+    .btn-primary:hover { background: #ffc42b; box-shadow: 0 0 20px #f0b31099; transform: scale(1.02); }
+    .btn-outline { background: transparent; color: #f0b310; border: 2px solid #f0b310; }
+    .btn-outline:hover { background: #f0b31022; transform: scale(1.02); }
+    .btn-success { background: #2ecc71; color: #0b0e14; }
+    .btn-success:hover { background: #3ae07f; }
+    .btn-danger { background: #e74c3c; color: #fff; }
+    .btn-danger:hover { background: #ff5544; }
+    .btn-small { padding: 6px 14px; font-size: 13px; }
+
+    .user-info { display: flex; align-items: center; gap: 20px; }
+    .balance-badge { background: #1f2a36; padding: 8px 18px; border-radius: 40px; border: 1px solid #f0b31066; display: flex; align-items: center; gap: 10px; font-weight: 700; }
+    .balance-badge i { color: #f0b310; }
+    .balance-amount { color: #f0b310; font-size: 18px; }
+
+    /* Основной контент */
+    .main { flex: 1; max-width: 1300px; margin: 0 auto; padding: 30px 20px; width: 100%; }
+    .hero { background: linear-gradient(145deg, #141a24, #0f141c); border-radius: 24px; padding: 40px 30px; margin-bottom: 40px; border-left: 8px solid #f0b310; box-shadow: 0 12px 30px rgba(0,0,0,0.5); text-align: center; }
+    .hero h2 { font-size: 42px; font-weight: 900; margin-bottom: 16px; background: linear-gradient(135deg, #ffffff, #f0b310); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .hero p { font-size: 20px; color: #b0b8cc; max-width: 700px; margin: 0 auto 24px; }
+
+    .mode-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 16px; margin: 30px 0 10px; }
+    .mode-card { background: #1c242f; padding: 18px 12px; border-radius: 16px; font-weight: 700; font-size: 22px; border: 1px solid #2f3a48; cursor: pointer; transition: all 0.2s; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 6px; }
+    .mode-card i { font-size: 28px; color: #f0b310; }
+    .mode-card:hover { background: #26303d; border-color: #f0b310; transform: translateY(-3px); box-shadow: 0 8px 20px #f0b31033; }
+    .mode-card.active { background: #f0b31022; border: 2px solid #f0b310; box-shadow: 0 0 18px #f0b31055; }
+
+    /* Зона действий */
+    .action-zone { margin-top: 28px; padding: 22px 24px; background: #0f141c; border: 1px solid #2a3442; border-radius: 18px; display: flex; flex-direction: column; align-items: center; gap: 16px; }
+    .bet-row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; justify-content: center; }
+    .bet-input-wrap { display: flex; align-items: center; gap: 10px; background: #0b0e14; border: 1px solid #2f3a48; border-radius: 12px; padding: 8px 16px; }
+    .bet-input-wrap label { color: #b0b8cc; font-weight: 600; white-space: nowrap; }
+    .bet-input-wrap input { background: transparent; border: none; color: #fff; font-size: 20px; font-weight: 800; outline: none; width: 120px; text-align: right; }
+    .bet-input-wrap span { color: #f0b310; font-weight: 800; font-size: 18px; }
+
+    .action-buttons { display: flex; gap: 16px; flex-wrap: wrap; justify-content: center; }
+    .btn-create { background: #2ecc71; color: #0b0e14; padding: 14px 28px; font-size: 17px; border-radius: 12px; }
+    .btn-create:hover { background: #3ae07f; transform: scale(1.03); box-shadow: 0 0 20px #2ecc7166; }
+    .btn-find { background: #f0b310; color: #0b0e14; padding: 14px 28px; font-size: 17px; border-radius: 12px; }
+    .btn-find:hover { background: #ffc42b; transform: scale(1.03); box-shadow: 0 0 20px #f0b31066; }
+
+    .action-hint { font-size: 13px; color: #8a95a8; text-align: center; max-width: 640px; line-height: 1.5; }
+
+    .section-title { font-size: 26px; font-weight: 800; margin-bottom: 20px; display: flex; align-items: center; gap: 12px; }
+    .section-title i { color: #f0b310; }
+
+    /* Панели */
+    .panel { background: #141a24; border-radius: 24px; padding: 28px 30px; margin-bottom: 30px; border: 1px solid #2a3442; box-shadow: 0 10px 25px #00000055; display: none; }
+    .panel.active { display: block; animation: fadeIn 0.3s ease; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    .panel h3 { font-size: 24px; margin-bottom: 20px; color: #f0b310; display: flex; align-items: center; gap: 10px; }
+
+    .form-group { margin-bottom: 18px; }
+    .form-group label { display: block; margin-bottom: 8px; font-weight: 600; color: #b0b8cc; }
+    .form-group input { width: 100%; padding: 14px 18px; background: #0b0e14; border: 1px solid #2f3a48; border-radius: 12px; color: #ffffff; font-size: 16px; outline: none; transition: 0.2s; }
+    .form-group input:focus { border-color: #f0b310; box-shadow: 0 0 0 3px #f0b31033; }
+
+    .btn-row { display: flex; gap: 15px; flex-wrap: wrap; margin-top: 20px; }
+
+    .lobby-list { display: flex; flex-direction: column; gap: 12px; margin-top: 20px; }
+    .lobby-item { background: #1c242f; border-radius: 14px; padding: 16px 22px; display: flex; align-items: center; justify-content: space-between; border-left: 4px solid #f0b310; flex-wrap: wrap; gap: 12px; }
+    .lobby-info { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+    .lobby-mode { font-weight: 800; font-size: 20px; color: #f0b310; background: #0b0e14; padding: 6px 16px; border-radius: 30px; }
+    .lobby-bet { font-weight: 800; color: #2ecc71; background: #0b0e14; padding: 6px 16px; border-radius: 30px; }
+    .lobby-players { color: #b0b8cc; font-weight: 500; }
+    .lobby-join { background: #f0b310; color: #0b0e14; border: none; padding: 10px 24px; border-radius: 30px; font-weight: 700; cursor: pointer; transition: 0.2s; }
+    .lobby-join:hover { background: #ffc42b; transform: scale(1.03); }
+    .lobby-leave { background: #e74c3c; color: #fff; border: none; padding: 10px 24px; border-radius: 30px; font-weight: 700; cursor: pointer; transition: 0.2s; }
+    .lobby-leave:hover { background: #ff5544; transform: scale(1.03); }
+
+    .alert { padding: 14px 20px; border-radius: 12px; margin-bottom: 16px; font-weight: 600; }
+    .alert-error { background: #e74c3c22; border: 1px solid #e74c3c; color: #ff7b6b; }
+    .alert-success { background: #2ecc7122; border: 1px solid #2ecc71; color: #6fe7a0; }
+    .hidden { display: none !important; }
+
+    /* Платёжная панель */
+    .pay-tabs { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+    .pay-tab { padding: 10px 22px; border-radius: 10px; background: #1c242f; border: 1px solid #2f3a48; color: #b0b8cc; font-weight: 700; cursor: pointer; transition: 0.2s; display: flex; align-items: center; gap: 8px; }
+    .pay-tab i { color: #f0b310; }
+    .pay-tab:hover { background: #26303d; border-color: #f0b31066; }
+    .pay-tab.active { background: #f0b31022; border-color: #f0b310; color: #fff; box-shadow: 0 0 14px #f0b31033; }
+    .pay-methods { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-bottom: 20px; }
+    .pay-method { background: #1c242f; border: 1px solid #2f3a48; border-radius: 12px; padding: 14px 16px; cursor: pointer; transition: 0.2s; display: flex; flex-direction: column; gap: 6px; align-items: flex-start; }
+    .pay-method:hover { background: #26303d; border-color: #f0b310; transform: translateY(-2px); }
+    .pay-method.active { background: #f0b31022; border: 2px solid #f0b310; box-shadow: 0 0 14px #f0b31044; }
+    .pay-method .pm-title { font-weight: 800; font-size: 16px; color: #fff; }
+    .pay-method .pm-currency { font-weight: 700; color: #f0b310; font-size: 15px; }
+    .pay-method .pm-sub { font-size: 12px; color: #8a95a8; }
+    .pay-amount-row { display: flex; gap: 16px; align-items: flex-end; flex-wrap: wrap; margin-bottom: 6px; }
+    .pay-amount-row .form-group { flex: 1; min-width: 200px; margin-bottom: 0; }
+    .pay-hint { font-size: 13px; color: #8a95a8; margin-bottom: 16px; }
+    .pay-submit { width: 100%; padding: 16px; font-size: 18px; border-radius: 14px; letter-spacing: 1px; }
+    .pay-note { font-size: 13px; color: #8a95a8; margin-top: 16px; line-height: 1.5; border-top: 1px solid #1e2835; padding-top: 14px; }
+
+    /* Выбор карты 1×1 */
+    .map-veto-banner {
+      background: linear-gradient(135deg, #f0b31022, #141a24);
+      border: 1px solid #f0b31066;
+      border-radius: 18px;
+      padding: 18px 22px;
+      margin-bottom: 22px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .map-veto-banner .mvb-title { font-weight: 800; font-size: 18px; color: #f0b310; display: flex; align-items: center; gap: 10px; }
+    .map-veto-banner .mvb-sub { color: #b0b8cc; font-size: 14px; }
+    .map-turn { background: #0b0e14; padding: 8px 16px; border-radius: 30px; border: 1px solid #2f3a48; font-weight: 700; color: #fff; }
+    .map-turn span { color: #f0b310; }
+
+    .map-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-bottom: 22px; }
+    .map-card {
+      background: #1c242f;
+      border: 2px solid #2f3a48;
+      border-radius: 14px;
+      padding: 16px 14px;
+      cursor: pointer;
+      transition: 0.2s;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      position: relative;
+    }
+    .map-card i { font-size: 26px; color: #8a95a8; }
+    .map-card .map-name { font-weight: 800; font-size: 16px; color: #fff; }
+    .map-card .map-sub { font-size: 12px; color: #8a95a8; }
+    .map-card:hover { border-color: #f0b310; transform: translateY(-2px); background: #26303d; }
+    .map-card.selected { border-color: #f0b310; background: #f0b31022; box-shadow: 0 0 18px #f0b31055; }
+    .map-card.selected i { color: #f0b310; }
+    .map-card.selected::after { content: "ВЫБРАНО"; position: absolute; top: 8px; right: 8px; font-size: 10px; font-weight: 800; color: #f0b310; background: #0b0e14; padding: 2px 6px; border-radius: 6px; }
+
+    .veto-actions { display: flex; gap: 14px; flex-wrap: wrap; justify-content: center; }
+
+    @media (max-width: 700px) {
+      .header { flex-direction: column; gap: 15px; }
+      .hero h2 { font-size: 30px; }
+      .auth-buttons { flex-wrap: wrap; justify-content: center; }
+      .panel { padding: 20px; }
+      .action-buttons { flex-direction: column; width: 100%; }
+      .action-buttons .btn { width: 100%; justify-content: center; }
+    }
+
+    .auth-only { display: none; }
+    .auth-only.visible { display: block; }
+    .guest-only.visible { display: flex; }
+  </style>
+</head>
+<body>
+  <!-- HEADER -->
+  <header class="header">
+    <div class="logo">
+      <i class="fas fa-crosshairs"></i>
+      <h1>CS:GO ARENA</h1>
+    </div>
+    <div class="auth-buttons" id="authButtons">
+      <div id="guestControls" class="guest-only visible" style="display: flex; gap: 15px;">
+        <button class="btn btn-outline" id="showLoginBtn"><i class="fas fa-sign-in-alt"></i> Вход</button>
+        <button class="btn btn-primary" id="showRegisterBtn"><i class="fas fa-user-plus"></i> Регистрация</button>
+      </div>
+      <div id="userControls" class="auth-only" style="display: none; align-items: center; gap: 20px;">
+        <div class="user-info">
+          <span id="userNameDisplay" style="font-weight: 700; color: #f0b310;"></span>
+          <div class="balance-badge">
+            <i class="fas fa-coins"></i>
+            <span class="balance-amount" id="balanceDisplay">0</span>
+            <span>₽</span>
+          </div>
+        </div>
+        <div style="display: flex; gap: 10px;">
+          <button class="btn btn-small btn-success" id="depositBtn"><i class="fas fa-plus-circle"></i> Пополнить</button>
+          <button class="btn btn-small btn-danger" id="withdrawBtn"><i class="fas fa-minus-circle"></i> Вывести</button>
+          <button class="btn btn-small btn-outline" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Выйти</button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN -->
+  <main class="main">
+    <div class="hero">
+      <h2>СРАЖАЙСЯ КАК ПРО</h2>
+      <p>Выбери режим, укажи ставку. Нажми «Создать игру», чтобы открыть лобби и ждать соперников, или «Найти игру», чтобы присоединиться к чужому лобби с такой же ставкой.</p>
+
+      <div class="mode-grid" id="modeGrid">
+        <div class="mode-card" data-mode="1v1"><i class="fas fa-user"></i> 1 vs 1</div>
+        <div class="mode-card" data-mode="2v2"><i class="fas fa-user-friends"></i> 2 vs 2</div>
+        <div class="mode-card" data-mode="3v3"><i class="fas fa-users"></i> 3 vs 3</div>
+        <div class="mode-card" data-mode="4v4"><i class="fas fa-users-cog"></i> 4 vs 4</div>
+        <div class="mode-card" data-mode="5v5"><i class="fas fa-people-arrows"></i> 5 vs 5</div>
+      </div>
+
+      <div class="action-zone">
+        <div class="bet-row">
+          <div class="bet-input-wrap">
+            <label>Ставка:</label>
+            <input type="number" id="betAmount" min="50" step="1" value="100">
+            <span>₽</span>
+          </div>
+        </div>
+        <div class="action-buttons">
+          <button class="btn btn-create" id="createGameBtn"><i class="fas fa-plus-circle"></i> Создать игру</button>
+          <button class="btn btn-find" id="findGameBtn"><i class="fas fa-search"></i> Найти игру</button>
+        </div>
+        <div class="action-hint">
+          Минимальная ставка — 50 ₽. При создании лобби ставка списывается и возвращается при выходе.
+          «Найти игру» присоединяет к существующему лобби с тем же режимом и ставкой.
+        </div>
+      </div>
+    </div>
+
+    <!-- Панель входа -->
+    <div class="panel" id="loginPanel">
+      <h3><i class="fas fa-sign-in-alt"></i> Вход в аккаунт</h3>
+      <div id="loginError" class="alert alert-error hidden"></div>
+      <div class="form-group">
+        <label>Никнейм</label>
+        <input type="text" id="loginUsername" placeholder="Ваш никнейм">
+      </div>
+      <div class="form-group">
+        <label>Пароль</label>
+        <input type="password" id="loginPassword" placeholder="Пароль">
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-primary" id="doLoginBtn">Войти</button>
+        <button class="btn btn-outline" id="closeLoginBtn">Отмена</button>
+      </div>
+    </div>
+
+    <!-- Панель регистрации -->
+    <div class="panel" id="registerPanel">
+      <h3><i class="fas fa-user-plus"></i> Регистрация</h3>
+      <div id="registerError" class="alert alert-error hidden"></div>
+      <div class="form-group">
+        <label>Никнейм (уникальный)</label>
+        <input type="text" id="regUsername" placeholder="Например: s1mple">
+      </div>
+      <div class="form-group">
+        <label>Пароль</label>
+        <input type="password" id="regPassword" placeholder="Минимум 4 символа">
+      </div>
+      <div class="form-group">
+        <label>Подтвердите пароль</label>
+        <input type="password" id="regPasswordConfirm" placeholder="Повторите пароль">
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-primary" id="doRegisterBtn">Зарегистрироваться</button>
+        <button class="btn btn-outline" id="closeRegisterBtn">Отмена</button>
+      </div>
+    </div>
+
+    <!-- ПАНЕЛЬ ПОПОЛНЕНИЯ -->
+    <div class="panel" id="depositPanel">
+      <h3><i class="fas fa-plus-circle" style="color:#2ecc71;"></i> Пополнение баланса</h3>
+      <div id="depositMessage" class="alert hidden"></div>
+      <div class="pay-tabs" id="depositTabs">
+        <div class="pay-tab active" data-tab="cards"><i class="fas fa-credit-card"></i> Карты</div>
+        <div class="pay-tab" data-tab="wallets"><i class="fas fa-wallet"></i> Кошельки</div>
+        <div class="pay-tab" data-tab="crypto"><i class="fas fa-bitcoin-sign"></i> Крипта</div>
+      </div>
+      <div style="font-weight:700; margin-bottom:12px; color:#b0b8cc;">Выберите способ оплаты</div>
+      <div class="pay-methods" id="depositMethods"></div>
+      <div class="pay-amount-row">
+        <div class="form-group">
+          <label>Сумма:</label>
+          <input type="number" id="depositAmount" min="50" step="1" placeholder="Введите сумму">
+        </div>
+      </div>
+      <div class="pay-hint">Мин. 50 ₽</div>
+      <button class="btn btn-success pay-submit" id="confirmDepositBtn">ПОПОЛНИТЬ СЧЕТ</button>
+      <div class="pay-note">
+        Если после оплаты прошло более 30 минут, а баланс на сайте не пополнился,
+        то напишите нам в <a href="#" style="color:#f0b310;">техподдержку</a>.
+      </div>
+      <div class="btn-row" style="margin-top:16px;">
+        <button class="btn btn-outline" id="closeDepositBtn">Отмена</button>
+      </div>
+    </div>
+
+    <!-- ПАНЕЛЬ ВЫВОДА -->
+    <div class="panel" id="withdrawPanel">
+      <h3><i class="fas fa-minus-circle" style="color:#e74c3c;"></i> Вывод средств</h3>
+      <div id="withdrawMessage" class="alert hidden"></div>
+      <div class="pay-tabs" id="withdrawTabs">
+        <div class="pay-tab active" data-tab="cards"><i class="fas fa-credit-card"></i> Карты</div>
+        <div class="pay-tab" data-tab="wallets"><i class="fas fa-wallet"></i> Кошельки</div>
+        <div class="pay-tab" data-tab="crypto"><i class="fas fa-bitcoin-sign"></i> Крипта</div>
+      </div>
+      <div style="font-weight:700; margin-bottom:12px; color:#b0b8cc;">Выберите способ вывода</div>
+      <div class="pay-methods" id="withdrawMethods"></div>
+      <div class="pay-amount-row">
+        <div class="form-group">
+          <label>Сумма:</label>
+          <input type="number" id="withdrawAmount" min="1" step="1" placeholder="Введите сумму">
+        </div>
+      </div>
+      <div class="pay-hint">Доступно: <span id="withdrawAvailable">0</span> ₽</div>
+      <button class="btn btn-danger pay-submit" id="confirmWithdrawBtn">ВЫВЕСТИ СРЕДСТВА</button>
+      <div class="pay-note">
+        Вывод обрабатывается в течение 24 часов. Убедитесь, что реквизиты указаны верно.
+      </div>
+      <div class="btn-row" style="margin-top:16px;">
+        <button class="btn btn-outline" id="closeWithdrawBtn">Отмена</button>
+      </div>
+    </div>
+
+    <!-- ================= ПАНЕЛЬ ВЫБОРА КАРТЫ 1×1 ================= -->
+    <div class="panel" id="mapSelectPanel">
+      <h3><i class="fas fa-map"></i> Выбор карты — 1×1 CS</h3>
+      <div id="mapSelectMessage" class="alert hidden"></div>
+
+      <div class="map-veto-banner">
+        <div>
+          <div class="mvb-title"><i class="fas fa-crosshairs"></i> Выберите карту для дуэли</div>
+          <div class="mvb-sub" id="mapSelectSub">Кликните по карте, затем нажмите «Играть на этой карте». Матч начнётся сразу после подтверждения.</div>
+        </div>
+        <div class="map-turn" id="mapSelectBetDisplay">Ставка: <span id="mapSelectBetValue">—</span> ₽</div>
+      </div>
+
+      <div class="map-grid" id="mapGrid"></div>
+
+      <div class="veto-actions">
+        <button class="btn btn-success" id="playOnMapBtn" disabled><i class="fas fa-play"></i> Играть на этой карте</button>
+        <button class="btn btn-outline" id="cancelMapSelectBtn">Отмена</button>
+      </div>
+
+      <div class="pay-note" style="margin-top:20px;">
+        Режим 1×1 CS: выберите карту для дуэли. После подтверждения матч стартует, банк = ставка × число игроков, победитель определяется симуляцией.
+      </div>
+    </div>
+
+    <!-- ЛОББИ -->
+    <div id="lobbySection" class="auth-only" style="display: none;">
+      <div class="section-title">
+        <i class="fas fa-gamepad"></i> Игровые лобби
+      </div>
+      <div id="lobbyListContainer">
+        <div class="lobby-list" id="lobbyList"></div>
+      </div>
+    </div>
+
+    <div id="guestMessage" class="guest-only visible" style="display: none; text-align: center; padding: 40px; background: #141a24; border-radius: 24px;">
+      <i class="fas fa-lock" style="font-size: 48px; color: #f0b310; margin-bottom: 16px;"></i>
+      <h3>Войдите или зарегистрируйтесь</h3>
+      <p style="color: #b0b8cc;">Чтобы создавать лобби и играть, нужно авторизоваться.</p>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <p>CS:GO ARENA — киберспортивная платформа (демо). Все матчи симулируются. © 2025</p>
+  </footer>
+
+  <script>
+    (function() {
+      // ---------- ХРАНИЛИЩЕ ----------
+      let users = {};
+      let currentUser = null;
+      let lobbies = [];
+
+      // ---------- DOM ----------
+      const guestControls = document.getElementById('guestControls');
+      const userControls = document.getElementById('userControls');
+      const userNameDisplay = document.getElementById('userNameDisplay');
+      const balanceDisplay = document.getElementById('balanceDisplay');
+      const lobbySection = document.getElementById('lobbySection');
+      const guestMessage = document.getElementById('guestMessage');
+      const lobbyList = document.getElementById('lobbyList');
+      const modeCards = document.querySelectorAll('.mode-card');
+      const betInput = document.getElementById('betAmount');
+      const createGameBtn = document.getElementById('createGameBtn');
+      const findGameBtn = document.getElementById('findGameBtn');
+
+      const loginPanel = document.getElementById('loginPanel');
+      const registerPanel = document.getElementById('registerPanel');
+      const depositPanel = document.getElementById('depositPanel');
+      const withdrawPanel = document.getElementById('withdrawPanel');
+      const mapSelectPanel = document.getElementById('mapSelectPanel');
+
+      const showLoginBtn = document.getElementById('showLoginBtn');
+      const showRegisterBtn = document.getElementById('showRegisterBtn');
+      const closeLoginBtn = document.getElementById('closeLoginBtn');
+      const closeRegisterBtn = document.getElementById('closeRegisterBtn');
+      const doLoginBtn = document.getElementById('doLoginBtn');
+      const doRegisterBtn = document.getElementById('doRegisterBtn');
+      const logoutBtn = document.getElementById('logoutBtn');
+      const depositBtn = document.getElementById('depositBtn');
+      const withdrawBtn = document.getElementById('withdrawBtn');
+      const closeDepositBtn = document.getElementById('closeDepositBtn');
+      const closeWithdrawBtn = document.getElementById('closeWithdrawBtn');
+      const confirmDepositBtn = document.getElementById('confirmDepositBtn');
+      const confirmWithdrawBtn = document.getElementById('confirmWithdrawBtn');
+
+      // ---------- Карты ----------
+      const MAP_POOL = [
+        { id: 'mirage',   name: 'Mirage' },
+        { id: 'inferno',  name: 'Inferno' },
+        { id: 'dust2',    name: 'Dust II' },
+        { id: 'nuke',     name: 'Nuke' },
+        { id: 'ancient',  name: 'Ancient' },
+        { id: 'anubis',   name: 'Anubis' },
+        { id: 'vertigo',  name: 'Vertigo' },
+        { id: 'overpass', name: 'Overpass' },
+        { id: 'train',    name: 'Train' },
+      ];
+
+      // Состояние выбора карты: { lobbyId, mode, bet, players, selectedMapId }
+      let mapSelectState = null;
+
+      let selectedMode = '1v1';
+
+      // ---------- Платёжные данные ----------
+      const METHODS = {
+        cards: [
+          { id: 'sbp',   title: 'СБП',   currency: 'RUB', sub: 'Система быстрых платежей' },
+          { id: 'gm',    title: 'GM',    currency: 'RUB', sub: 'Карта / GM' },
+          { id: 'plink', title: 'Plink', currency: 'RUB', sub: 'Plink' },
+        ],
+        wallets: [
+          { id: 'yoomoney', title: 'ЮMoney', currency: 'RUB', sub: 'Кошелёк' },
+          { id: 'qiwi',     title: 'QIWI',   currency: 'RUB', sub: 'Кошелёк' },
+        ],
+        crypto: [
+          { id: 'btc', title: 'Bitcoin',  currency: 'RUB', sub: 'BTC' },
+          { id: 'usdt', title: 'USDT',    currency: 'RUB', sub: 'TRC-20' },
+        ],
+      };
+
+      let depositMethod = 'sbp';
+      let withdrawMethod = 'sbp';
+
+      // ---------- УТИЛИТЫ ----------
+      function hideAllPanels() {
+        loginPanel.classList.remove('active');
+        registerPanel.classList.remove('active');
+        depositPanel.classList.remove('active');
+        withdrawPanel.classList.remove('active');
+        mapSelectPanel.classList.remove('active');
+      }
+
+      function showError(panelId, message) {
+        const errDiv = document.getElementById(panelId + 'Error') || document.getElementById(panelId + 'Message');
+        if (errDiv) {
+          errDiv.textContent = message;
+          errDiv.classList.remove('hidden');
+          setTimeout(() => errDiv.classList.add('hidden'), 5000);
+        } else alert(message);
+      }
+
+      function showMessage(panelId, message, type = 'error') {
+        const msgDiv = document.getElementById(panelId + 'Message') || document.getElementById(panelId + 'Error');
+        if (msgDiv) {
+          msgDiv.textContent = message;
+          msgDiv.className = 'alert ' + (type === 'success' ? 'alert-success' : 'alert-error');
+          msgDiv.classList.remove('hidden');
+          setTimeout(() => msgDiv.classList.add('hidden'), 4000);
+        }
+      }
+
+      function updateUI() {
+        if (currentUser) {
+          guestControls.style.display = 'none';
+          userControls.style.display = 'flex';
+          userNameDisplay.textContent = currentUser.username;
+          balanceDisplay.textContent = currentUser.balance;
+          lobbySection.style.display = 'block';
+          guestMessage.style.display = 'none';
+          document.getElementById('withdrawAvailable').textContent = currentUser.balance;
+          renderLobbies();
+        } else {
+          guestControls.style.display = 'flex';
+          userControls.style.display = 'none';
+          lobbySection.style.display = 'none';
+          guestMessage.style.display = 'block';
+          hideAllPanels();
+        }
+      }
+
+      // ---------- АВТОРИЗАЦИЯ ----------
+      function login(username, password) {
+        const user = users[username];
+        if (!user || user.password !== password) throw new Error('Неверный никнейм или пароль');
+        currentUser = { username, balance: user.balance };
+        saveCurrentUser();
+        updateUI();
+      }
+
+      function register(username, password, confirm) {
+        if (!username || username.length < 3) throw new Error('Никнейм должен быть не короче 3 символов');
+        if (users[username]) throw new Error('Пользователь с таким ником уже существует');
+        if (!password || password.length < 4) throw new Error('Пароль должен быть не короче 4 символов');
+        if (password !== confirm) throw new Error('Пароли не совпадают');
+        users[username] = { password, balance: 0 };
+        saveUsers();
+        currentUser = { username, balance: 0 };
+        saveCurrentUser();
+        updateUI();
+      }
+
+      function logout() {
+        currentUser = null;
+        saveCurrentUser();
+        updateUI();
+        ['loginUsername','loginPassword','regUsername','regPassword','regPasswordConfirm'].forEach(id => {
+          const el = document.getElementById(id); if (el) el.value = '';
+        });
+      }
+
+      // ---------- БАЛАНС ----------
+      function updateBalance(newBalance) {
+        if (!currentUser) return;
+        if (newBalance < 0) throw new Error('Баланс не может быть отрицательным');
+        users[currentUser.username].balance = newBalance;
+        currentUser.balance = newBalance;
+        balanceDisplay.textContent = newBalance;
+        document.getElementById('withdrawAvailable').textContent = newBalance;
+        saveUsers();
+        saveCurrentUser();
+      }
+
+      function deposit(amount) {
+        if (!currentUser) throw new Error('Требуется авторизация');
+        if (!depositMethod) throw new Error('Выберите способ оплаты');
+        const num = Number(amount);
+        if (!num || num <= 0 || !Number.isInteger(num)) throw new Error('Введите корректную сумму (целое число > 0)');
+        if (num < 50) throw new Error('Минимальная сумма пополнения — 50 ₽');
+        updateBalance(currentUser.balance + num);
+        return num;
+      }
+
+      function withdraw(amount) {
+        if (!currentUser) throw new Error('Требуется авторизация');
+        if (!withdrawMethod) throw new Error('Выберите способ вывода');
+        const num = Number(amount);
+        if (!num || num <= 0 || !Number.isInteger(num)) throw new Error('Введите корректную сумму (целое число > 0)');
+        if (currentUser.balance < num) throw new Error('Недостаточно средств');
+        updateBalance(currentUser.balance - num);
+        return num;
+      }
+
+      // ---------- ЛОББИ ----------
+      function getModeMaxPlayers(mode) {
+        return { '1v1': 2, '2v2': 4, '3v3': 6, '4v4': 8, '5v5': 10 }[mode] || 2;
+      }
+
+      function validateBet(bet) {
+        const num = Number(bet);
+        if (!num || num <= 0 || !Number.isInteger(num)) throw new Error('Введите корректную ставку (целое число > 0)');
+        if (num < 50) throw new Error('Минимальная ставка — 50 ₽');
+        if (currentUser && num > currentUser.balance) throw new Error('Недостаточно средств для этой ставки');
+        return num;
+      }
+
+      function createLobby(mode, creator, bet) {
+        const maxPlayers = getModeMaxPlayers(mode);
+        const newLobby = {
+          id: Date.now() + Math.floor(Math.random() * 1000),
+          mode: mode,
+          bet: bet,
+          maxPlayers: maxPlayers,
+          players: [creator],
+          createdBy: creator,
+          status: 'waiting', // waiting | map_select
+        };
+        lobbies.push(newLobby);
+        saveLobbies();
+        renderLobbies();
+        return newLobby;
+      }
+
+      // Присоединение к лобби → сразу открываем выбор карты
+      function joinLobby(lobbyId, username) {
+        const lobby = lobbies.find(l => l.id === lobbyId);
+        if (!lobby) throw new Error('Лобби не найдено');
+        if (lobby.status !== 'waiting') throw new Error('В этом лобби уже идёт выбор карты');
+        if (lobby.players.includes(username)) throw new Error('Вы уже в этом лобби');
+        if (lobby.players.length >= lobby.maxPlayers) throw new Error('Лобби заполнено');
+        const user = users[username];
+        if (user.balance < lobby.bet) throw new Error(`Недостаточно средств: нужна ставка ${lobby.bet} ₽`);
+
+        // Списываем ставку
+        users[username].balance -= lobby.bet;
+        if (currentUser && currentUser.username === username) {
+          currentUser.balance = users[username].balance;
+          balanceDisplay.textContent = currentUser.balance;
+        }
+        lobby.players.push(username);
+        saveUsers();
+        saveLobbies();
+        renderLobbies();
+
+        // Открываем выбор карты (1×1 CS)
+        openMapSelect(lobby);
+      }
+
+      // ---------- ВЫБОР КАРТЫ 1×1 ----------
+      function openMapSelect(lobby) {
+        // Лобби переходит в статус выбора карты
+        lobby.status = 'map_select';
+        saveLobbies();
+
+        mapSelectState = {
+          lobbyId: lobby.id,
+          mode: lobby.mode,
+          bet: lobby.bet,
+          players: [...lobby.players],
+          selectedMapId: null,
+        };
+
+        hideAllPanels();
+        mapSelectPanel.classList.add('active');
+        document.getElementById('mapSelectBetValue').textContent = lobby.bet;
+        renderMapSelect();
+        mapSelectPanel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+
+      function renderMapSelect() {
+        if (!mapSelectState) return;
+        const grid = document.getElementById('mapGrid');
+        grid.innerHTML = MAP_POOL.map(m => {
+          const sel = mapSelectState.selectedMapId === m.id;
+          return `
+            <div class="map-card ${sel ? 'selected' : ''}" data-map-id="${m.id}">
+              <i class="fas fa-map"></i>
+              <span class="map-name">${m.name}</span>
+              <span class="map-sub">${sel ? 'Выбрано' : 'Дуэль 1×1'}</span>
+            </div>
+          `;
+        }).join('');
+
+        grid.querySelectorAll('.map-card').forEach(card => {
+          card.addEventListener('click', () => {
+            mapSelectState.selectedMapId = card.dataset.mapId;
+            renderMapSelect();
+          });
+        });
+
+        const playBtn = document.getElementById('playOnMapBtn');
+        playBtn.disabled = !mapSelectState.selectedMapId;
+        playBtn.onclick = () => startMatchOnMap();
+      }
+
+      function startMatchOnMap() {
+        if (!mapSelectState || !mapSelectState.selectedMapId) return;
+        const map = MAP_POOL.find(m => m.id === mapSelectState.selectedMapId);
+        const lobby = lobbies.find(l => l.id === mapSelectState.lobbyId);
+        if (!lobby) {
+          mapSelectState = null;
+          mapSelectPanel.classList.remove('active');
+          return;
+        }
+        const bank = mapSelectState.bet * mapSelectState.players.length;
+        const winner = mapSelectState.players[Math.floor(Math.random() * mapSelectState.players.length)];
+        users[winner].balance += bank;
+        if (currentUser && currentUser.username === winner) {
+          currentUser.balance = users[winner].balance;
+          balanceDisplay.textContent = currentUser.balance;
+        }
+        lobbies = lobbies.filter(l => l.id !== mapSelectState.lobbyId);
+        saveUsers();
+        saveLobbies();
+        mapSelectState = null;
+        mapSelectPanel.classList.remove('active');
+        renderLobbies();
+        alert(`Дуэль 1×1 на карте ${map.name} (ставка ${lobby.bet} ₽) завершена!\nПобедитель: ${winner}\nБанк: ${bank} ₽`);
+      }
+
+      function cancelMapSelect() {
+        if (!mapSelectState) { mapSelectPanel.classList.remove('active'); return; }
+        // Возвращаем игрока из лобби и ставку
+        const lobby = lobbies.find(l => l.id === mapSelectState.lobbyId);
+        if (lobby) {
+          const username = currentUser ? currentUser.username : null;
+          if (username && lobby.players.includes(username)) {
+            users[username].balance += lobby.bet;
+            if (currentUser) {
+              currentUser.balance = users[username].balance;
+              balanceDisplay.textContent = currentUser.balance;
+            }
+            lobby.players = lobby.players.filter(p => p !== username);
+            if (lobby.players.length === 0) {
+              lobbies = lobbies.filter(l => l.id !== lobby.id);
+            } else if (lobby.createdBy === username) {
+              lobby.createdBy = lobby.players[0];
+            }
+            lobby.status = 'waiting';
+          }
+        }
+        saveUsers();
+        saveLobbies();
+        mapSelectState = null;
+        mapSelectPanel.classList.remove('active');
+        renderLobbies();
+      }
+
+      function leaveLobby(lobbyId, username) {
+        const lobby = lobbies.find(l => l.id === lobbyId);
+        if (!lobby) throw new Error('Лобби не найдено');
+        if (!lobby.players.includes(username)) throw new Error('Вы не в этом лобби');
+        users[username].balance += lobby.bet;
+        if (currentUser && currentUser.username === username) {
+          currentUser.balance = users[username].balance;
+          balanceDisplay.textContent = currentUser.balance;
+        }
+        lobby.players = lobby.players.filter(p => p !== username);
+        if (lobby.players.length === 0) {
+          lobbies = lobbies.filter(l => l.id !== lobbyId);
+        } else if (lobby.createdBy === username) {
+          lobby.createdBy = lobby.players[0];
+        }
+        saveUsers();
+        saveLobbies();
+        renderLobbies();
+      }
+
+      // Создание игры
+      function handleCreateGame() {
+        if (!currentUser) { alert('Войдите в аккаунт, чтобы создать игру'); return; }
+        const bet = validateBet(betInput.value);
+        const inLobby = lobbies.find(l => l.players.includes(currentUser.username));
+        if (inLobby) {
+          alert(`Вы уже в лобби ${inLobby.mode} со ставкой ${inLobby.bet} ₽. Сначала покиньте его.`);
+          return;
+        }
+        users[currentUser.username].balance -= bet;
+        currentUser.balance = users[currentUser.username].balance;
+        balanceDisplay.textContent = currentUser.balance;
+        saveUsers();
+        saveCurrentUser();
+        createLobby(selectedMode, currentUser.username, bet);
+        alert(`Лобби ${selectedMode} со ставкой ${bet} ₽ создано. Ожидаем игроков...`);
+      }
+
+      // Поиск игры
+      function handleFindGame() {
+        if (!currentUser) { alert('Войдите в аккаунт, чтобы найти игру'); return; }
+        const bet = validateBet(betInput.value);
+        const inLobby = lobbies.find(l => l.players.includes(currentUser.username));
+        if (inLobby) {
+          alert(`Вы уже в лобби ${inLobby.mode} со ставкой ${inLobby.bet} ₽. Сначала покиньте его.`);
+          return;
+        }
+        const candidate = lobbies.find(l =>
+          l.mode === selectedMode &&
+          l.bet === bet &&
+          l.players.length < l.maxPlayers &&
+          l.status === 'waiting'
+        );
+        if (!candidate) {
+          alert(`Подходящих лобби (${selectedMode}, ставка ${bet} ₽) не найдено.\nНажмите «Создать игру», чтобы открыть своё лобби.`);
+          return;
+        }
+        try {
+          joinLobby(candidate.id, currentUser.username);
+        } catch (err) { alert(err.message); }
+      }
+
+      function renderLobbies() {
+        if (!currentUser || !lobbyList) return;
+        if (lobbies.length === 0) {
+          lobbyList.innerHTML = '<p style="color: #b0b8cc; padding: 20px;">Нет активных лобби. Нажмите «Создать игру», чтобы открыть своё!</p>';
+          return;
+        }
+        lobbyList.innerHTML = lobbies.map(lobby => {
+          const joined = lobby.players.includes(currentUser.username);
+          const canJoin = !joined && lobby.players.length < lobby.maxPlayers && lobby.status === 'waiting';
+          return `
+            <div class="lobby-item">
+              <div class="lobby-info">
+                <span class="lobby-mode">${lobby.mode}</span>
+                <span class="lobby-bet"><i class="fas fa-coins"></i> ${lobby.bet} ₽</span>
+                <span class="lobby-players"><i class="fas fa-user"></i> ${lobby.players.length}/${lobby.maxPlayers}</span>
+                <span style="color:#b0b8cc;">${lobby.players.join(', ')}</span>
+                ${lobby.status === 'map_select' ? '<span style="color:#f0b310; font-weight:700;"><i class="fas fa-map"></i> Выбор карты</span>' : ''}
+              </div>
+              <div>
+                ${joined
+                  ? (lobby.status === 'map_select'
+                      ? '<span style="color:#f0b310; font-weight:700;">Идёт выбор карты</span>'
+                      : `<button class="lobby-leave" data-lobby-id="${lobby.id}"><i class="fas fa-sign-out-alt"></i> Покинуть</button>`)
+                  : canJoin
+                    ? `<button class="lobby-join" data-lobby-id="${lobby.id}"><i class="fas fa-sign-in-alt"></i> Присоединиться (${lobby.bet} ₽)</button>`
+                    : '<span style="color:#e74c3c;">Заполнено</span>'}
+              </div>
+            </div>
+          `;
+        }).join('');
+
+        document.querySelectorAll('.lobby-join').forEach(btn => {
+          btn.addEventListener('click', (e) => {
+            const lobbyId = Number(e.target.closest('.lobby-join').dataset.lobbyId);
+            try { joinLobby(lobbyId, currentUser.username); }
+            catch (err) { alert(err.message); }
+          });
+        });
+        document.querySelectorAll('.lobby-leave').forEach(btn => {
+          btn.addEventListener('click', (e) => {
+            const lobbyId = Number(e.target.closest('.lobby-leave').dataset.lobbyId);
+            try { leaveLobby(lobbyId, currentUser.username); }
+            catch (err) { alert(err.message); }
+          });
+        });
+      }
+
+      // ---------- СПОСОБЫ ОПЛАТЫ ----------
+      function renderPaymentMethods(container, tab, selected, onSelect) {
+        container.innerHTML = METHODS[tab].map(m => `
+          <div class="pay-method ${selected === m.id ? 'active' : ''}" data-method-id="${m.id}">
+            <span class="pm-title">${m.title}</span>
+            <span class="pm-currency">${m.currency}</span>
+            <span class="pm-sub">${m.sub}</span>
+          </div>
+        `).join('');
+        container.querySelectorAll('.pay-method').forEach(el => {
+          el.addEventListener('click', () => {
+            container.querySelectorAll('.pay-method').forEach(x => x.classList.remove('active'));
+            el.classList.add('active');
+            onSelect(el.dataset.methodId);
+          });
+        });
+      }
+
+      function setupPaymentPanel(prefix) {
+        const tabsEl = document.getElementById(prefix + 'Tabs');
+        const methodsEl = document.getElementById(prefix + 'Methods');
+        const setTab = (tab) => {
+          tabsEl.querySelectorAll('.pay-tab').forEach(t => t.classList.toggle('active', t.dataset.tab === tab));
+          const first = METHODS[tab][0].id;
+          if (prefix === 'deposit') depositMethod = first; else withdrawMethod = first;
+          renderPaymentMethods(methodsEl, tab, first, (id) => {
+            if (prefix === 'deposit') depositMethod = id; else withdrawMethod = id;
+          });
+        };
+        tabsEl.querySelectorAll('.pay-tab').forEach(tab => {
+          tab.addEventListener('click', () => setTab(tab.dataset.tab));
+        });
+        if (prefix === 'deposit') depositMethod = 'sbp'; else withdrawMethod = 'sbp';
+        renderPaymentMethods(methodsEl, 'cards', 'sbp', (id) => {
+          if (prefix === 'deposit') depositMethod = id; else withdrawMethod = id;
+        });
+      }
+
+      // ---------- ЗАГРУЗКА / СОХРАНЕНИЕ ----------
+      function loadData() {
+        try {
+          const storedUsers = localStorage.getItem('csgo_arena_users');
+          if (storedUsers) users = JSON.parse(storedUsers);
+          else { users = { 'demo': { password: '1234', balance: 1000 } }; saveUsers(); }
+
+          const storedLobbies = localStorage.getItem('csgo_arena_lobbies');
+          lobbies = storedLobbies ? JSON.parse(storedLobbies) : [];
+          // Сбрасываем зависшие статусы выбора карты при перезагрузке
+          lobbies.forEach(l => { if (l.status === 'map_select') l.status = 'waiting'; });
+
+          const storedCurrent = localStorage.getItem('csgo_arena_current');
+          if (storedCurrent) {
+            const uname = JSON.parse(storedCurrent);
+            if (users[uname]) currentUser = { username: uname, balance: users[uname].balance };
+          }
+        } catch (e) {
+          console.warn('Ошибка загрузки данных', e);
+          users = { 'demo': { password: '1234', balance: 1000 } };
+          lobbies = [];
+          currentUser = null;
+        }
+      }
+
+      function saveUsers() { localStorage.setItem('csgo_arena_users', JSON.stringify(users)); }
+      function saveLobbies() { localStorage.setItem('csgo_arena_lobbies', JSON.stringify(lobbies)); }
+      function saveCurrentUser() {
+        if (currentUser) localStorage.setItem('csgo_arena_current', JSON.stringify(currentUser.username));
+        else localStorage.removeItem('csgo_arena_current');
+      }
+
+      // ---------- ОБРАБОТЧИКИ ----------
+      showLoginBtn.addEventListener('click', () => { hideAllPanels(); loginPanel.classList.add('active'); });
+      showRegisterBtn.addEventListener('click', () => { hideAllPanels(); registerPanel.classList.add('active'); });
+      closeLoginBtn.addEventListener('click', () => loginPanel.classList.remove('active'));
+      closeRegisterBtn.addEventListener('click', () => registerPanel.classList.remove('active'));
+      closeDepositBtn.addEventListener('click', () => depositPanel.classList.remove('active'));
+      closeWithdrawBtn.addEventListener('click', () => withdrawPanel.classList.remove('active'));
+
+      doLoginBtn.addEventListener('click', () => {
+        const username = document.getElementById('loginUsername').value.trim();
+        const password = document.getElementById('loginPassword').value;
+        try {
+          login(username, password);
+          loginPanel.classList.remove('active');
+          document.getElementById('loginError').classList.add('hidden');
+        } catch (err) { showError('login', err.message); }
+      });
+
+      doRegisterBtn.addEventListener('click', () => {
+        const username = document.getElementById('regUsername').value.trim();
+        const password = document.getElementById('regPassword').value;
+        const confirm = document.getElementById('regPasswordConfirm').value;
+        try {
+          register(username, password, confirm);
+          registerPanel.classList.remove('active');
+          document.getElementById('registerError').classList.add('hidden');
+        } catch (err) { showError('register', err.message); }
+      });
+
+      logoutBtn.addEventListener('click', logout);
+
+      depositBtn.addEventListener('click', () => { hideAllPanels(); depositPanel.classList.add('active'); });
+      withdrawBtn.addEventListener('click', () => {
+        hideAllPanels();
+        document.getElementById('withdrawAvailable').textContent = currentUser ? currentUser.balance : 0;
+        withdrawPanel.classList.add('active');
+      });
+
+      confirmDepositBtn.addEventListener('click', () => {
+        const amount = document.getElementById('depositAmount').value;
+        try {
+          const added = deposit(amount);
+          showMessage('deposit', `Баланс пополнен на ${added} ₽`, 'success');
+          document.getElementById('depositAmount').value = '';
+          setTimeout(() => depositPanel.classList.remove('active'), 1500);
+        } catch (err) { showMessage('deposit', err.message, 'error'); }
+      });
+
+      confirmWithdrawBtn.addEventListener('click', () => {
+        const amount = document.getElementById('withdrawAmount').value;
+        try {
+          const withdrawn = withdraw(amount);
+          showMessage('withdraw', `Выведено ${withdrawn} ₽`, 'success');
+          document.getElementById('withdrawAmount').value = '';
+          setTimeout(() => withdrawPanel.classList.remove('active'), 1500);
+        } catch (err) { showMessage('withdraw', err.message, 'error'); }
+      });
+
+      modeCards.forEach(card => {
+        card.addEventListener('click', () => {
+          modeCards.forEach(c => c.classList.remove('active'));
+          card.classList.add('active');
+          selectedMode = card.dataset.mode;
+        });
+      });
+
+      createGameBtn.addEventListener('click', handleCreateGame);
+      findGameBtn.addEventListener('click', handleFindGame);
+      document.getElementById('cancelMapSelectBtn').addEventListener('click', cancelMapSelect);
+
+      // Инициализация
+      setupPaymentPanel('deposit');
+      setupPaymentPanel('withdraw');
+      loadData();
+      if (modeCards.length) { modeCards[0].classList.add('active'); selectedMode = '1v1'; }
+      updateUI();
+    })();
+  </script>
+</body>
+</html>
