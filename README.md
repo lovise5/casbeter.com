@@ -1,2 +1,0 @@
-# casbeter.com
-my progekt
